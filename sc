@@ -156,7 +156,7 @@ class RSvc
 		else
 			startL = []
 		end
-		printf "%#{name_fsz}s %s %s %{pid_fsz}d\n", "NAME", "        ", "           ", !pidL.empty? ? "PID" : ""
+		printf "%#{name_fsz}s %s %s %#{pid_fsz}d\n", "NAME", "        ", "           ", !pidL.empty? ? "PID" : ""
 		zip enabledL, runL, startL, pidL do |e, enabled, run, start, pid|
 			printf "%#{name_fsz}s %s %s %s\n", e.name, enabled, run, start.to_s, pid.to_s
 		end
@@ -223,7 +223,7 @@ class RSvc
 	
 end
 
-require 'fileutils"
+require "fileutils"
 
 [ESV, VSV, ESP].each{ FileUtils.mkdir_p _1 }
 
