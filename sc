@@ -183,7 +183,7 @@ class RSvc
 		when "down:"
 			@pid = nil
 			p lna[3]
-			@seconds = lna[3].chop.to_i
+			@seconds = lna[2].chop.to_i
 			@enabled = true
 		when "fail:"
 			@pid = nil
