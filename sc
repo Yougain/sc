@@ -135,8 +135,6 @@ class RSvc
 			loggerL = []
 			logger_fsz = 0
 		end
-		p loggerL
-		p logger_fsz
 		enabled_fsz = enabledL.map{ _1.size }.max
 		runL = en.map{
 			if _1.pid
@@ -173,7 +171,7 @@ class RSvc
 		end
 		printf "%#{name_fsz}s %#{enabled_fsz}s %11s%#{start_fsz}s %-#{pid_fsz}s %-#{logger_fsz}s\n", "NAME", "", "", "", !pidL.empty? ? "PID" : "", "LOG"
 		en.zip enabledL, runL, startL, pidL, loggerL do |e, enabled, run, start, pid, logger|
-			printf "%#{name_fsz}s %#{enabled_fsz}s %s%s %s\n", e.name, enabled, run, start.to_s, pid.to_s, logger.to_s
+			printf "%#{name_fsz}s %#{enabled_fsz}s %s%s %s %s\n", e.name, enabled, run, start.to_s, pid.to_s, logger.to_s
 		end
 	end
 	def initialize name
