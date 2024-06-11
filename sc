@@ -101,10 +101,13 @@ class RSvc
 	def self.each
 		if List.empty?
 			ESP.each_entry do |f|
+				p f
 				List[_ = f.basename] ||= new _
 			end
 			ESV.each_entry do |d|
+				p d
 				if (r = d / "run")._e?
+					p r
 					List[_ = d.basename] ||= new _
 				end
 			end
