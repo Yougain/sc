@@ -172,7 +172,7 @@ class RSvc
 		else
 			startL = []
 		end
-		printf "%#{name_fsz}s %#{enabled_fsz}s %11s%#{start_fsz}s %-#{pid_fsz}s %-#{logger_fsz}s\n", "NAME".yellow, "", "", "", !pidL.empty? ? "PID".yellow : "", logger_fsz == 0 ? "" : "LOG".yellow
+		print sprintf("%#{name_fsz}s %#{enabled_fsz}s %11s%#{start_fsz}s %-#{pid_fsz}s %-#{logger_fsz}s\n", "NAME".yellow, "", "", "", !pidL.empty? ? "PID" : "", logger_fsz == 0 ? "" : "LOG").yellow
 		en.zip enabledL, runL, startL, pidL, loggerL do |e, enabled, run, start, pid, logger|
 			printf "%#{name_fsz}s %#{enabled_fsz}s %s%s %s %s\n", e.name, enabled == "enabled" ? enabled.cyan : enabled.red, run, start.to_s, pid.to_s, logger.to_s
 		end
