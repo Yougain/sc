@@ -169,10 +169,10 @@ class RSvc
 	def initialize name
 		@name = name
 	end
-	attr_reader :pid, :seconds, :enabled
+	attr_reader :pid, :seconds, :enabled, :name
 	def anal_stat ln
 		lna = ln.split
-		case lna[0]
+		case lna[0]?:
 		when "run:"
 			@pid = lna[3].chop.to_i
 			@seconds = lna[4].chop.to_i
