@@ -209,7 +209,7 @@ class RSvc
 			%W{sudo lsp -3 #{@pid}}.system
 		end
 		if @logger
-			if _ = [VSV / "log", "/var/log" / @name].detect{ _1 / "current")._e?
+			if _ = [VSV / "log", "/var/log" / @name].detect{ _1 / "current"}._e?
 				"tail".system "-10", _
 			end
 		end
