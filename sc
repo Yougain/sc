@@ -190,7 +190,9 @@ class RSvc
 		end
 	end
 	def get_stat
+		p
 		if (VSV / "@name" / "run")._e?
+			p
 			(%W{sv status} + [ESV / "@name"]).read_each_line_p do |ln|
 				p @name, ln
 				sln, lln, = ln.split /;/
@@ -200,9 +202,11 @@ class RSvc
 					@logger.anal_stat lln
 				end
 			end
+			p
 		elsif (ESP / "@name")._e?
 			@enabled = false
 		else
+			p
 			STDERR.write "Error: service, '#{@name}' not found."
 			exit 1
 		end
