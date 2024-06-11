@@ -2,6 +2,7 @@
 
 
 require 'Yk/path_aux'
+require 'Yk/debug2'
 
 
 if "/data/data/com.termux/files"._d?
@@ -121,6 +122,7 @@ class RSvc
 		else
 			en = rsvcs
 		end
+		p List
 		name_fsz = en.map{ _1.name.size }.max
 		pid_fsz = en.map{ _1.pid.to_s.size }.max
 		secondsL = en.map{ _1.seconds }.reject{ !_1 }
