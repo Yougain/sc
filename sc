@@ -190,7 +190,8 @@ class RSvc
 		end
 	end
 	def get_stat
-		p
+		p VSV / "@name" / "run"
+		p (VSV / "@name" / "run")._e?
 		if (VSV / "@name" / "run")._e?
 			p
 			(%W{sv status} + [ESV / "@name"]).read_each_line_p do |ln|
@@ -207,7 +208,7 @@ class RSvc
 			@enabled = false
 		else
 			p
-			STDERR.write "Error: service, '#{@name}' not found."
+			STDERR.write "Error: service, '#{@name}' not found.\n"
 			exit 1
 		end
 	end
