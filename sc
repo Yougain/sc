@@ -112,7 +112,7 @@ class RSvc
 				end
 			end
 		end
-		List.values
+		List.values.sort_by{ _1. name }
 	end
 	def self.print_stats *rsvcs
 		if rsvcs.empty?
