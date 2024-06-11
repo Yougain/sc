@@ -186,7 +186,7 @@ class RSvc
 		end
 	end
 	def get_stat
-		if (ESV / "@name" / "run")._e?
+		if (VSV / "@name" / "run")._e?
 			(%W{sv status} + [ESV / "@name"]).read_each_line_p do |ln|
 				p @name, ln
 				sln, lln, = ln.split /;/
