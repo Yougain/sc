@@ -159,7 +159,7 @@ class RSvc
 			startL = []
 		end
 		printf "%#{name_fsz}s %#{enabled_fsz}s %11s%#{start_fsz}s %-#{pid_fsz}s\n", "NAME", "", "", "", !pidL.empty? ? "PID" : ""
-		getList.zip enabledL, runL, startL, pidL do |e, enabled, run, start, pid|
+		en.zip enabledL, runL, startL, pidL do |e, enabled, run, start, pid|
 			printf "%#{name_fsz}s %#{enabled_fsz}s %s%s %s\n", e.name, enabled, run, start.to_s, pid.to_s
 		end
 	end
@@ -204,6 +204,7 @@ class RSvc
 		end
 	end
 	def print_stat
+		p 
 		get_stat
 		arr = [self]
 		@logger && arr.push(@logger)
