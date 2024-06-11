@@ -226,8 +226,8 @@ class RSvc
 		end
 		if @logger
 			print "\n"
-			if (_ = [VSV / @name / "log", LOGD2 / @name, "/var/log" / @name, ].detect{ _1 / "current"})._e?
-				"tail".system "-10", _ / "current"
+			if _ = [VSV / @name / "log", LOGD2 / @name, "/var/log" / @name, ].detect{ (_1 / "current")._e? }
+				"tail".system "-10", _
 			end
 		end
 	end
