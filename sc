@@ -115,12 +115,11 @@ class RSvc
 			end
 		end
 		List.values.each do |v|
-			p v
 			yield v
 		end
 	end
 	def self.print_stats *rsvcs
-		if !rsvcs.empty?
+		if rsvcs.empty?
 			each do |e|
 				e.get_stat
 			end
