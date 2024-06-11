@@ -87,10 +87,10 @@ class RSvc
 	List = {}
 	def self.emerge arg, **opts
 		sp = (ESP / arg)._?._e?.__it
-		vs = (VSV / "run")._?._e?.__it
+		vs = (VSV / arg / "run")._?._e?.__it
 		if !sp && !vs
 			if opts[:err_exit]
-				STDERR.write "Error: service, '#{ARGV[0]}', not found."
+				STDERR.write "Error: service, '#{ARGV[0]}', not found.\n"
 				exit 1
 			end
 			return nil
@@ -245,7 +245,7 @@ case ARGV.size
 when 0
 	RSvc.print_stats
 when 1
-	RSvc.emerge(ARGV[0], err_exit:1)&.print_stat(:long)
+	RSvc.emerge(ARGV[0], err_exit:1)&.print_stat
 when 2
 	ARGV.each do |e|
 		if CMDS.include? e
