@@ -100,16 +100,11 @@ class RSvc
 	end
 	def self.each
 		if List.empty?
-			p ESP
 			ESP.each_entry do |f|
-				p f
 				List[_ = f.basename] ||= new _
 			end
-			p ESV
-			ESV.each_entry do |d|
-				p d
+			VSV.each_entry do |d|
 				if (r = d / "run")._e?
-					p r
 					List[_ = d.basename] ||= new _
 				end
 			end
@@ -168,6 +163,7 @@ class RSvc
 		end
 	end
 	def initialize name
+		p name
 		@name = name
 	end
 	attr_reader :pid, :seconds, :enabled
