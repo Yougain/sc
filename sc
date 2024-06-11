@@ -209,14 +209,15 @@ class RSvc
 		@logger && arr.push(@logger)
 		self.class.print_stats *arr
 		if @pid
+			print "\n"
 			"sudo".system "lsp", "-3", @pid.to_s
 		end
 		if @logger
+			print "\n"
 			if (_ = [VSV / @name / "log", "/var/log" / @name].detect{ _1 / "current"})._e?
 				"tail".system "-10", _ / "current"
 			end
 		end
-		p
 	end
 	def stat
 		print_stat
