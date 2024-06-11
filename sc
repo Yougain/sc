@@ -109,6 +109,7 @@ class RSvc
 				end
 			end
 		end
+		p List
 		List.values.each do |v|
 			p v
 			yield v
@@ -121,6 +122,7 @@ class RSvc
 				p e
 				e.get_stat
 			end
+			p
 			en = to_enum
 		else
 			en = rsvcs
