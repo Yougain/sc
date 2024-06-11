@@ -190,11 +190,11 @@ class RSvc
 		end
 	end
 	def get_stat
-		p VSV / "@name" / "run"
-		p (VSV / "@name" / "run")._e?
-		if (VSV / "@name" / "run")._e?
+		p VSV / @name / "run"
+		p (VSV / @name / "run")._e?
+		if (VSV / @name / "run")._e?
 			p
-			(%W{sv status} + [ESV / "@name"]).read_each_line_p do |ln|
+			(%W{sv status} + [ESV / @name]).read_each_line_p do |ln|
 				p @name, ln
 				sln, lln, = ln.split /;/
 				anal_stat sln
@@ -204,7 +204,7 @@ class RSvc
 				end
 			end
 			p
-		elsif (ESP / "@name")._e?
+		elsif (ESP / @name)._e?
 			@enabled = false
 		else
 			p
