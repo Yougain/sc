@@ -171,7 +171,10 @@ class RSvc
 	end
 	attr_reader :pid, :seconds, :enabled, :name
 	def anal_stat ln
+		p self
+		p ln
 		lna = ln.split
+		p lna
 		case lna[0]
 		when "run:"
 			@pid = lna[3].chop.to_i
@@ -179,6 +182,7 @@ class RSvc
 			@enabled = true
 		when "down:"
 			@pid = nil
+			p lna[3]
 			@seconds = lna[3].chop.to_i
 			@enabled = true
 		when "fail:"
