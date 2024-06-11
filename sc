@@ -210,7 +210,7 @@ class RSvc
 		self.class.print_stats *arr
 		if @pid
 			print "\n"
-			"sudo".system "lsp", "-3", @pid.to_s
+			"sudo".system "lsp", "-1", @pid.to_s
 		end
 		if @logger
 			print "\n"
