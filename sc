@@ -163,7 +163,6 @@ class RSvc
 		end
 	end
 	def initialize name
-		p name
 		@name = name
 	end
 	attr_reader :pid, :seconds, :enabled
@@ -189,6 +188,7 @@ class RSvc
 	def get_stat
 		if (ESV / "@name" / "run")._e?
 			(%W{sv status} + [ESV / "@name"]).read_each_line_p do |ln|
+				p @name, ln
 				sln, lln, = ln.split /;/
 				anal_stat sln
 				if lln
