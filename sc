@@ -218,7 +218,7 @@ class RSvc
 			p
 			if (_ = [VSV / @name / "log", "/var/log" / @name].detect{ _1 / "current"})._e?
 				p
-				"tail".system "-10", _
+				"tail".system "-10", _ / "current"
 				p
 			end
 			p
