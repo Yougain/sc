@@ -126,10 +126,14 @@ class RSvc
 		secondsL = en.map{ _1.seconds }.reject{ !_1 }
 		enabledL = en.map{ _1.enabled ? "enabled" : "disabled" }
 		if en != rsvcs
-			loggerL = en.map{ _1.logger&.pid&.to_s&.size }
-		end
-		logger_fsz = clause loggerL.reject{ _1.nil? } do
-			_1.empty? ? 0 : (_1 + [3]).max
+			loggerLS = en.map{ _1.logger&.pid&.to_s&.size }
+			loggerL = en.map{ _1.logger&.pid&.to_s }
+			logger_fsz = clause loggerLS.reject{ _1.nil? } do
+				_1.empty? ? 0 : (_1 + [3]).max
+			end
+		else
+			loggerL = []
+			logger_fsz = 0
 		end
 		enabled_fsz = enabledL.map{ _1.size }.max
 		runL = en.map{
