@@ -20,7 +20,7 @@ class TimeDiffFmt
 	t = Time.at(0)
 	PADDS = []
 	TMF.each do |f|
-		PADDS.push t.strftime(f).size * " "
+		PADDS.push " " * t.strftime(f).size
 	end
 	TMFL = [] # [21, 18, 15, 8, 5, 2]
 	plen = 0
