@@ -110,6 +110,7 @@ class RSvc
 			end
 		end
 		List.values.each do |v|
+			p v
 			yield v
 		end
 	end
