@@ -123,16 +123,19 @@ class RSvc
 		name_fsz = en.map{ _1.name.size }.max
 		pid_fsz = en.map{ _1.pid.to_s.size }.max
 		secondsL = en.map{ _1.seconds }.reject{ !_1 }
-		enabledL = en.map{ _1.enabled ? "enabled " : "disabled" }
+		enabledL = en.map{ _1.enabled ? "enabled" : "disabled" }
+		enabled_fsz = enabledL.map{ _1.size }.max
 		runL = en.map{
 			if _1.pid
 				if _1.seconds
 					"started at "
-				else
-					"stopped at "
 				end
 			else
+				if _1.seconds
+					"stopped at "
+				else
 				    "error      "
+				end
 			end
 		}
 		if pid_fsz > 0
@@ -150,14 +153,14 @@ class RSvc
 			tn = Time.now
 			oldest = tn - secondsL.max
 			df = TimeDiffFmt.new oldest, tn
-			seconds_fsz = df.size
+			start_fsz = df.size
 			startL = en.map{ df.fmt((tn - _1.seconds rescue nil)) }
 		else
 			startL = []
 		end
-		printf "%#{name_fsz}s %s %s %#{pid_fsz}s\n", "NAME", "        ", "           ", !pidL.empty? ? "PID" : ""
+		printf "%#{name_fsz}s %#{enabled_fsz}s %11s%#{start_fsz}s %#{pid_fsz}s\n", "NAME", "", "", "", !pidL.empty? ? "PID" : ""
 		getList.zip enabledL, runL, startL, pidL do |e, enabled, run, start, pid|
-			printf "%#{name_fsz}s %s %s %s\n", e.name, enabled, run, start.to_s, pid.to_s
+			printf "%#{name_fsz}s %#{enabled_fsz}s %s%s %s\n", e.name, enabled, run, start.to_s, pid.to_s
 		end
 	end
 	def initialize name
