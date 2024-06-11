@@ -4,6 +4,8 @@
 require 'Yk/path_aux'
 require 'Yk/debug2'
 
+require 'Yk/escseq'
+Escseq.beIncludedBy String
 
 if "/data/data/com.termux/files"._d?
 	prefix = "/data/data/com.termux/files/usr"
@@ -140,13 +142,13 @@ class RSvc
 		runL = en.map{
 			if _1.pid
 				if _1.seconds
-					"started at "
+					"started".green + " at "
 				end
 			else
 				if _1.seconds
-					"stopped at "
+					"stopped".red + " at "
 				else
-				    "error      "
+				    "error      ".red
 				end
 			end
 		}
@@ -172,7 +174,7 @@ class RSvc
 		end
 		printf "%#{name_fsz}s %#{enabled_fsz}s %11s%#{start_fsz}s %-#{pid_fsz}s %-#{logger_fsz}s\n", "NAME", "", "", "", !pidL.empty? ? "PID" : "", logger_fsz == 0 ? "" : "LOG"
 		en.zip enabledL, runL, startL, pidL, loggerL do |e, enabled, run, start, pid, logger|
-			printf "%#{name_fsz}s %#{enabled_fsz}s %s%s %s %s\n", e.name, enabled, run, start.to_s, pid.to_s, logger.to_s
+			printf "%#{name_fsz}s %#{enabled_fsz}s %s%s %s %s\n", e.name, enabled == "enabled" ? enabled.cyan : enabled.red, run, start.to_s, pid.to_s, logger.to_s
 		end
 	end
 	def initialize name
