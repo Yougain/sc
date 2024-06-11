@@ -122,8 +122,15 @@ class RSvc
 		end
 		name_fsz = en.map{ _1.name.size }.max
 		pid_fsz = en.map{ _1.pid.to_s.size }.max
+		pid_fsz = pid_fsz > 0 ? [3, pid_fsz].max : 0
 		secondsL = en.map{ _1.seconds }.reject{ !_1 }
 		enabledL = en.map{ _1.enabled ? "enabled" : "disabled" }
+		if en != rsvcs
+			loggerL = en.map{ _1.logger.pid }
+		end
+		logger_fsz = clause loggerL.reject{ _1.nil? } do
+			_1.empty? ? 0 : (_1 + [3]).max
+		end
 		enabled_fsz = enabledL.map{ _1.size }.max
 		runL = en.map{
 			if _1.pid
@@ -158,7 +165,7 @@ class RSvc
 		else
 			startL = []
 		end
-		printf "%#{name_fsz}s %#{enabled_fsz}s %11s%#{start_fsz}s %-#{pid_fsz}s\n", "NAME", "", "", "", !pidL.empty? ? "PID" : ""
+		printf "%#{name_fsz}s %#{enabled_fsz}s %11s%#{start_fsz}s %-#{pid_fsz}s %-#{logger_fsz}s\n", "NAME", "", "", "", !pidL.empty? ? "PID" : "", "LOG"
 		en.zip enabledL, runL, startL, pidL do |e, enabled, run, start, pid|
 			printf "%#{name_fsz}s %#{enabled_fsz}s %s%s %s\n", e.name, enabled, run, start.to_s, pid.to_s
 		end
@@ -166,7 +173,7 @@ class RSvc
 	def initialize name
 		@name = name
 	end
-	attr_reader :pid, :seconds, :enabled, :name
+	attr_reader :pid, :seconds, :enabled, :name, :logger
 	def anal_stat ln
 		lna = ln.split
 		case lna[0]
