@@ -135,6 +135,7 @@ class RSvc
 			loggerL = []
 			logger_fsz = 0
 		end
+		p loggerL
 		enabled_fsz = enabledL.map{ _1.size }.max
 		runL = en.map{
 			if _1.pid
