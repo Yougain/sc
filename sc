@@ -115,6 +115,7 @@ class RSvc
 			end
 		end
 		List.values.each do |v|
+			p v
 			yield v
 		end
 	end
@@ -127,7 +128,6 @@ class RSvc
 		else
 			en = rsvcs
 		end
-		p List
 		name_fsz = en.map{ _1.name.size }.max
 		pid_fsz = en.map{ _1.pid.to_s.size }.max
 		secondsL = en.map{ _1.seconds }.reject{ !_1 }
