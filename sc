@@ -14,6 +14,7 @@ end
 ESV = prefix / "etc" / "service"
 VSV = prefix / "var" / "service"
 ESP = prefix / "etc" / "service_pool"
+LOGD2 = prefix / "var/log/sv"
 
 class TimeDiffFmt
 	TM = [:year, :mon, :day, :hour, :min, :sec]
@@ -225,7 +226,7 @@ class RSvc
 		end
 		if @logger
 			print "\n"
-			if (_ = [VSV / @name / "log", "/var/log" / @name].detect{ _1 / "current"})._e?
+			if (_ = [VSV / @name / "log", LOGD2 / @name, "/var/log" / @name, ].detect{ _1 / "current"})._e?
 				"tail".system "-10", _ / "current"
 			end
 		end
