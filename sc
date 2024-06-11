@@ -152,7 +152,7 @@ class RSvc
 			oldest = tn - secondsL.max
 			df = TimeDiffFmt.new oldest, tn
 			seconds_fsz = df.size
-			startL = en.map{ df.fmt(tn - _1.seconds rescue nil) }
+			startL = en.map{ df.fmt((tn - _1.seconds rescue nil)) }
 		else
 			startL = []
 		end
