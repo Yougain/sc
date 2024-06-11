@@ -98,7 +98,7 @@ class RSvc
 			new arg
 		end
 	end
-	def self.each
+	def self.getList
 		if List.empty?
 			ESP.each_entry do |f|
 				List[_ = f.basename] ||= new _
@@ -109,23 +109,18 @@ class RSvc
 				end
 			end
 		end
-		p List
-		List.values.each do |v|
-			p v
-			yield v
-			p
-		end
+		List.values
 	end
 	def self.print_stats *rsvcs
 		if rsvcs.empty?
 			p
-			each do |e|
+			en = getList
+			en.each do |e|
 				p e
 				e.get_stat
 				p
 			end
 			p
-			en = to_enum
 			p
 		else
 			en = rsvcs
@@ -213,6 +208,7 @@ class RSvc
 		end
 	end
 	def print_stat
+		get_stat
 		arr = [self]
 		@logger && arr.push(@logger)
 		self.class.print_stats *arr
