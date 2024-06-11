@@ -113,19 +113,13 @@ class RSvc
 	end
 	def self.print_stats *rsvcs
 		if rsvcs.empty?
-			p
 			en = getList
 			en.each do |e|
-				p e
 				e.get_stat
-				p
 			end
-			p
-			p
 		else
 			en = rsvcs
 		end
-		p
 		name_fsz = en.map{ _1.name.size }.max
 		pid_fsz = en.map{ _1.pid.to_s.size }.max
 		secondsL = en.map{ _1.seconds }.reject{ !_1 }
@@ -162,7 +156,7 @@ class RSvc
 			startL = []
 		end
 		printf "%#{name_fsz}s %s %s %#{pid_fsz}s\n", "NAME", "        ", "           ", !pidL.empty? ? "PID" : ""
-		zip enabledL, runL, startL, pidL do |e, enabled, run, start, pid|
+		getList.zip enabledL, runL, startL, pidL do |e, enabled, run, start, pid|
 			printf "%#{name_fsz}s %s %s %s\n", e.name, enabled, run, start.to_s, pid.to_s
 		end
 	end
@@ -171,10 +165,7 @@ class RSvc
 	end
 	attr_reader :pid, :seconds, :enabled, :name
 	def anal_stat ln
-		p self
-		p ln
 		lna = ln.split
-		p lna
 		case lna[0]
 		when "run:"
 			@pid = lna[3].chop.to_i
@@ -182,7 +173,6 @@ class RSvc
 			@enabled = true
 		when "down:"
 			@pid = nil
-			p lna[3]
 			@seconds = lna[2].chop.to_i
 			@enabled = true
 		when "fail:"
