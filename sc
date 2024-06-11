@@ -115,7 +115,9 @@ class RSvc
 	end
 	def self.print_stats *rsvcs
 		if rsvcs.empty?
+			p
 			each do |e|
+				p e
 				e.get_stat
 			end
 			en = to_enum
