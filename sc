@@ -170,8 +170,8 @@ class RSvc
 			startL = []
 		end
 		printf "%#{name_fsz}s %#{enabled_fsz}s %11s%#{start_fsz}s %-#{pid_fsz}s %-#{logger_fsz}s\n", "NAME", "", "", "", !pidL.empty? ? "PID" : "", "LOG"
-		en.zip enabledL, runL, startL, pidL do |e, enabled, run, start, pid|
-			printf "%#{name_fsz}s %#{enabled_fsz}s %s%s %s\n", e.name, enabled, run, start.to_s, pid.to_s
+		en.zip enabledL, runL, startL, pidL, loggerL do |e, enabled, run, start, pid, logger|
+			printf "%#{name_fsz}s %#{enabled_fsz}s %s%s %s\n", e.name, enabled, run, start.to_s, pid.to_s, logger.to_s
 		end
 	end
 	def initialize name
