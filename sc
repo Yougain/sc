@@ -131,6 +131,7 @@ class RSvc
 		logger_fsz = clause loggerL.reject{ _1.nil? } do
 			_1.empty? ? 0 : (_1 + [3]).max
 		end
+		p logger_fsz
 		enabled_fsz = enabledL.map{ _1.size }.max
 		runL = en.map{
 			if _1.pid
