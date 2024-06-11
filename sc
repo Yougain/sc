@@ -113,6 +113,7 @@ class RSvc
 		List.values.each do |v|
 			p v
 			yield v
+			p
 		end
 	end
 	def self.print_stats *rsvcs
@@ -121,12 +122,15 @@ class RSvc
 			each do |e|
 				p e
 				e.get_stat
+				p
 			end
 			p
 			en = to_enum
+			p
 		else
 			en = rsvcs
 		end
+		p
 		name_fsz = en.map{ _1.name.size }.max
 		pid_fsz = en.map{ _1.pid.to_s.size }.max
 		secondsL = en.map{ _1.seconds }.reject{ !_1 }
