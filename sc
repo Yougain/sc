@@ -1,9 +1,9 @@
 #!/bin/env ruby
 
-#a
+
 require 'Yk/path_aux'
 require 'Yk/debug2'
-#bcde
+#bcdefd
 require 'Yk/escseq'
 Escseq.beIncludedBy String
 
