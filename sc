@@ -3,7 +3,7 @@
 
 require 'Yk/path_aux'
 require 'Yk/debug2'
-#bc
+#bcde
 require 'Yk/escseq'
 Escseq.beIncludedBy String
 
