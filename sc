@@ -6,7 +6,7 @@ require 'Yk/debug2'
 #bcdefd
 require 'Yk/escseq'
 Escseq.beIncludedBy String
-
+#ds
 if "/data/data/com.termux/files"._d?
 	prefix = "/data/data/com.termux/files/usr"
 else
