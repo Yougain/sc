@@ -356,7 +356,7 @@ class RSvc
 			edl = ESV / @name / "log"
 			edl2 = LOGD2 / @name
 			erunl = edl / "run"
-			if ! erunl._L?
+			if edl._e? && ! erunl._L?
 				erunl.rm
 				LOGGER.symlink erunl
 			end
@@ -381,7 +381,26 @@ class RSvc
 			exit 1
 		else
 			ed.symlink vd
-			start
+			cnt = 0
+			r = catch :got do
+				while true
+					sleep 1
+					%W{ps ax}.read_each_line_p do |ln|
+						if ln =~ / runsv #{Regexp.escape @name}$/
+							throw :got, :got
+						end
+					end
+					cnt += 1
+					if cnt > 10
+						break
+					end
+				end
+			end
+			if r == :got
+				start
+			else
+				STDERR.write "Warning: runsv ${@name}, not yet started.\n"
+			end
 		end
 	end
 end
@@ -422,6 +441,10 @@ when 2
 		else
 			target = e
 		end
+	end
+	if !target || !cmd
+		STDERR.write "Error: command '#{target}#{cmd}', not found.\n"
+		exit 1
 	end
 	if CMDS.detect cmd
 		RSvc.emerge(target, err_exit:1)&.method(cmd).call
