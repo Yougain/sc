@@ -10,6 +10,7 @@ Escseq.beIncludedBy String
 if "/data/data/com.termux/files"._d?
 	prefix = "/data/data/com.termux/files/usr"
 else
+	require "Yk/rootexec"
 	prefix = "/"
 end
 
@@ -18,28 +19,28 @@ VSV = prefix / "var" / "service"
 ESP = prefix / "etc" / "service_pool"
 LOGD2 = prefix / "var/log/sv"
 LOGGER = prefix / "usr/bin" / "svlogger"
+MTLOGGER = prefix / "usr/bin" / "multilog"
+SVLOGGER = prefix / "usr/bin" / "svlogd"
 
 if !LOGGER._e?
+	if MTLOGGER._e?
+		logger = "multilog t"
+	elsif SVLOGGER._e?
+		logger = "svlogd -ttt"
+	else
+		STDERR.write "Error: Cannot find multilog and svlogd.\n"
+		exit 1
+	end
 	LOGGER.write <<~END
 		#!/bin/env sh
 		# Get the name of the service from the PWD, this assumes the name of the
 		# service is one level above the log directory.
+		PWD="`pwd`"
 		pwd=${PWD%/*} # $SVDIR/service/foo/log
 		service=${pwd##*/} # foo
 
-		if [ -e /data/data/com.termux/files ];then
-		        LOGDIR=/data/data/com.termux/files/usr/var/log
-		        SUDO=
-		else
-		        LOGDIR=/var/log
-		        SUDO=sudo
-		fi
-
-		if [ ! -d "$LOGDIR/sv/$service" ];then
-		        $SUDO mkdir -p "$LOGDIR/sv/$service"
-		fi
-
-		exec svlogd -ttt "$LOGDIR/sv/$service"
+		mkdir -p "#{LOGD2}/$service"
+		exec #{logger} "#{LOGD2}/$service"
 	END
 	LOGGER.chmod 0775
 end
@@ -151,34 +152,55 @@ class RSvc
 			new arg
 		end
 	end
-	def self.getList
+	def self.getList isAll
 		if List.empty?
-			ESP.each_entry do |f|
-				List[_ = f.basename] ||= new _
-			end
 			VSV.each_entry do |d|
 				if (r = d / "run")._e?
 					List[_ = d.basename] ||= new _
 				end
 			end
-		end
-		List.values.sort_by{ _1. name }
-	end
-	def self.print_stats *rsvcs
-		if rsvcs.empty?
-			en = getList
-			en.each do |e|
-				e.get_stat
+			lst = [ESV]
+			lst.push ESP if isAll == :all
+			lst.each do |d|
+				d.each_entry do |f|
+					List[_ = f.basename] ||= new _
+				end
 			end
-		else
-			en = rsvcs
+		end
+		List.values.sort_by{ _1.name }
+	end
+	def self.print_stats *en
+		if en.size == 0
+			en = *RSvc.getList(AllOpt)
+			en.each{ _1.get_stat }
+			listAll = true
 		end
 		name_fsz = en.map{ _1.name.size }.max
 		pid_fsz = en.map{ _1.pid.to_s.size }.max
 		pid_fsz = pid_fsz > 0 ? [3, pid_fsz].max : 0
 		secondsL = en.map{ _1.seconds }.reject{ !_1 }
-		enabledL = en.map{ _1.enabled ? "enabled" : "disabled" }
-		if en != rsvcs
+		enabledL = en.map{
+			if _1.unregistered
+				"unregstered".purple
+			else
+				_1.enabled ? "enabled".cyan : "disabled".red
+			end
+		}
+		enabledMonoL = en.map{
+			if _1.unregistered
+				"unregstered"
+			else
+				_1.enabled ? "enabled" : "disabled"
+			end
+		}
+		enabledL = en.map{
+			if _1.unregistered
+				"unregstered".purple
+			else
+				_1.enabled ? "enabled".cyan : "disabled".red
+			end
+		}
+		if listAll
 			loggerLS = en.map{ _1.logger&.pid&.to_s&.size }
 			loggerL = en.map{ "#{_1.logger&.pid}" }
 			logger_fsz = clause loggerLS.reject{ _1.nil? } do
@@ -188,7 +210,7 @@ class RSvc
 			loggerL = []
 			logger_fsz = 0
 		end
-		enabled_fsz = enabledL.map{ _1.size }.max
+		enabled_fsz = enabledMonoL.map{ _1.size }.max
 		runL = en.map{
 			if _1.pid
 				if _1.seconds
@@ -197,8 +219,10 @@ class RSvc
 			else
 				if _1.seconds
 					"stopped".red + " at "
-				else
+				elsif _1.enabled
 				    "error      ".red
+				else
+					""
 				end
 			end
 		}
@@ -222,15 +246,15 @@ class RSvc
 		else
 			startL = []
 		end
-		print sprintf("%#{name_fsz}s %#{enabled_fsz}s %11s%#{start_fsz}s %-#{pid_fsz}s %-#{logger_fsz}s\n", "NAME", "", "", "", !pidL.empty? ? "PID" : "", logger_fsz == 0 ? "" : "LOG").yellow
+		print sprintf("%#{name_fsz}s %-7s            %-#{start_fsz}s %-#{pid_fsz}s %-#{logger_fsz}s\n", "NAME", "STATUS", "", !pidL.empty? ? "PID" : "", logger_fsz == 0 ? "" : "LOG").yellow
 		en.zip enabledL, runL, startL, pidL, loggerL do |e, enabled, run, start, pid, logger|
-			printf "%#{name_fsz}s %#{enabled_fsz}s %s%s %s %s\n", e.name, enabled == "enabled" ? enabled.cyan : enabled.red, run, start.to_s, pid.to_s, logger.to_s
+			printf "%#{name_fsz}s %#{enabled_fsz}s %s%s %s %s\n", e.name, enabled, run, start.to_s, pid.to_s, logger.to_s
 		end
 	end
 	def initialize name
 		@name = name
 	end
-	attr_reader :pid, :seconds, :enabled, :name, :logger
+	attr_reader :pid, :seconds, :enabled, :name, :logger, :unregistered
 	def anal_stat ln
 		lna = ln.split
 		case lna[0]
@@ -260,8 +284,10 @@ class RSvc
 					@logger.anal_stat lln
 				end
 			end
-		elsif (ESP / @name)._e?
+		elsif (ESV / @name)._e?
 			@enabled = false
+		elsif (ESP / @name)._e?
+			@unregistered = true
 		else
 			STDERR.write "Error: service, '#{@name}' not found.\n"
 			exit 1
@@ -328,12 +354,6 @@ class RSvc
 		end
 		%W{sv start #{@name}}.system
 	end
-	def delete
-		disable
-	end
-	def del
-		disable
-	end
 	def add
 		enable
 	end
@@ -380,6 +400,24 @@ class RSvc
 			STDERR.write "Error: Not converted to service_pool style.".ln
 			exit 1
 		else
+			if !ed._e?
+				prog = ESP / @name
+				if !prog._e?
+					STDERR.write "Error: #{prog} does not exist."
+					exit 1
+				end
+				ed.mkdir_p
+				erun = ed / "run"
+				prog.symlink erun
+			end
+			edl = ESV / @name / "log"
+			if !edl._e?
+				edl.mkdir
+				erunl = edl / "run"
+				LOGGER.symlink erunl
+				edl2 = LOGD2 / @name
+				edl2.mkdir_p
+			end
 			ed.symlink vd
 			cnt = 0
 			r = catch :got do
@@ -403,6 +441,39 @@ class RSvc
 			end
 		end
 	end
+	def unregister
+		delete
+	end
+	def del
+		delete
+	end
+	def delete
+		ed = ESV / @name
+		erun = ed / "run"
+		prog = ESP / @name
+		if !ed._e?
+			STDERR.write "Error: '#{ed}' is already deleted.\n"
+			exit 1
+		end
+		disable if (VSV / @name)._e?
+		if erun._e? && (!erun._L? || erun.readlink != prog)
+			STDERR.write "Error: Cannot delete #{@name}, '#{erun}' is non a symblic link to '#{prog}'.\n"
+			exit 1
+		end
+		edl = ed / "log"
+		if edl._e?
+			erunl = edl / "run"
+			if erunl._e? && (!erunl._L? || erunl.readlink != LOGGER)
+				STDERR.write "Error: Cannot delete #{@name}, 'log/run' is not a starndard logger.\n"
+				exit 1
+			end
+			if (edl / "current")._e?
+				STDERR.write "Error: Cannot delete #{@name}, 'log/current' exists.\n"
+				exit 1
+			end
+		end
+		ed.rm_rf
+	end
 end
 
 require "fileutils"
@@ -417,13 +488,15 @@ if ARGV.size > 2
 	
 end
 
-CMDS = %W{add delete enable disable start stop status stat}
+CMDS = %W{add delete del unregister enable disable start stop status stat}
 
 def usage
 	STDERR.write <<~END
 		usage: #{$0.basename} #{CMDS.join('|')} SERVICE_NAME
 	END
 end
+
+AllOpt = (ARGV.delete("-a") || ARGV.delete("--all")) ? :all : nil
 
 case ARGV.size
 when 0
