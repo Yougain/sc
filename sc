@@ -1,14 +1,14 @@
 #!/bin/env ruby
-#
 
 require 'Yk/path_aux'
-require 'Yk/debug2'
-#$
 require 'Yk/escseq'
 Escseq.beIncludedBy String
-#
+
 if "/data/data/com.termux/files"._d?
 	prefix = "/data/data/com.termux/files/usr"
+	(prefix / "bin/zv").tap {
+		_1._e? || "sc".symlink(_1)
+	}
 else
 	require "Yk/rootexec"
 	prefix = "/"
