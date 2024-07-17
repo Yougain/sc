@@ -492,9 +492,14 @@ CMDS = %W{add delete del unregister enable disable start stop status stat}
 
 def usage
 	STDERR.write <<~END
-		usage: #{$0.basename} #{CMDS.join('|')} SERVICE_NAME
+		# for each services
+		#{$0.basename} #{CMDS.join('|')} SERVICE_NAME
+		# display all status including unregisterd
+		#{$0.basename} -a|--all
 	END
 end
+
+(ARGV.delete("-?") || ARGV.delete("--help")) and (usage; exit 0)
 
 AllOpt = (ARGV.delete("-a") || ARGV.delete("--all")) ? :all : nil
 
