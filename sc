@@ -492,7 +492,7 @@ CMDS = %W{add delete del unregister enable disable start stop status stat}
 
 def usage
 	STDERR.write <<~END
-		# for each services
+		# for each service
 		#{$0.basename} #{CMDS.join('|')} SERVICE_NAME
 		# display all status including unregisterd
 		#{$0.basename} -a|--all
